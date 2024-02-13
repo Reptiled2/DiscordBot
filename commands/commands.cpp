@@ -6,17 +6,23 @@
 #include "dpp/dpp.h"
 #include "commands.h"
 
+std::vector<Command<int>> commands;
 
-extern std::vector<Command<int>> commands;
 
+void setupCommands() {
 
-int addCommand(const std::string& name, const std::string& description, bool NSFW, std::function<void(dpp::cluster&, const dpp::slashcommand_t&)> execute) {
-    Command<int> command;
-    command.name = name;
-    command.description = description;
-    command.NSFW = NSFW;
-    command.execute = execute;
+    // Ping
+    {
+        Command<int> command;
+        command.name = "ping";
+        command.description = "Returns client latency.";
+        command.NSFW = true;
+        command.execute = 
+            [](dpp::cluster& bot, const dpp::slashcommand_t& event) {
+                event.reply(dpp::message(":ping_pong: Pong!"));
+                return;
+            };
 
-    commands.push_back(command);
-    return 0;
+        commands.push_back(command);
+    }
 }

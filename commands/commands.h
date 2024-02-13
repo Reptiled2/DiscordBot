@@ -1,7 +1,7 @@
+#pragma once
 #ifndef COMMANDS_H
 #define COMMANDS_H
 
-#include "ping.h"
 #include <map>
 #include <functional>
 #include <string>
@@ -15,5 +15,9 @@ struct Command {
 
     std::function<void(dpp::cluster&, const dpp::slashcommand_t&)> execute;
 };
+
+extern std::vector<Command<int>> commands;
+
+void setupCommands();
 
 #endif

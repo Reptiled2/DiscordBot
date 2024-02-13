@@ -18,6 +18,7 @@ int main() {
 	bot.on_ready([&bot](const dpp::ready_t &event) {
 		if (dpp::run_once<struct register_bot_commands>()) {
 			std::cout << "Registering commands...\n";
+			setupCommands();
 			registerCommands(bot);
 			std::cout << "Registered commands.\n";
 		};
