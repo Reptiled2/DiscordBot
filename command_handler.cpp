@@ -38,6 +38,6 @@ void registerCommands(dpp::cluster &bot) {
 		commandList.push_back(command);
 	};
 
-	bot.global_bulk_command_create(commandList);
+	bot.global_bulk_command_create_sync(commandList);
 };
 
