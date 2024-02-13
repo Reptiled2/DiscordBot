@@ -28,9 +28,7 @@ void handleCommands(dpp::cluster &bot, const dpp::slashcommand_t &event) {
 void registerCommands(dpp::cluster &bot) {
 	bot.global_bulk_command_delete_sync();
 
-	dpp::slashcommand_map currentCommands = bot.global_commands_get_sync();
 	std::vector<dpp::slashcommand> commandList;
-
 	for (auto i = commands.begin(); i != commands.end(); i++) {
 		dpp::slashcommand command;
 		command.name = i->name;
