@@ -16,6 +16,8 @@ int main() {
 
 
 	bot.on_ready([&bot](const dpp::ready_t &event) {
+		bot.set_presence(dpp::presence::presence(dpp::presence_status::ps_idle, dpp::activity_type::at_custom, "Booting up..."));
+
 		if (dpp::run_once<struct register_bot_commands>()) {
 			std::cout << "Registering commands...\n";
 			setupCommands();
@@ -23,6 +25,7 @@ int main() {
 			std::cout << "Registered commands.\n";
 		};
 
+		bot.set_presence(dpp::presence::presence(dpp::presence_status::ps_online, dpp::activity_type::at_listening, ""));
 		std::cout << "Bot is up and running!\n";
 		return;
 	});
