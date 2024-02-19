@@ -6,23 +6,23 @@
 #include "dpp/dpp.h"
 #include "commands.h"
 
-std::vector<Command<int>> commands;
+std::vector<std::pair<dpp::slashcommand, std::function<void(dpp::cluster&, const dpp::slashcommand_t&)>>> commands;
 
 
 void setupCommands() {
 
     // Ping
     {
-        Command<int> command;
+        dpp::slashcommand command;
         command.name = "ping";
         command.description = "Returns client latency.";
-        command.NSFW = true;
-        command.execute = 
+        command.set_nsfw(false);
+
+        commands.emplace_back(command,
             [](dpp::cluster& bot, const dpp::slashcommand_t& event) {
                 event.reply(dpp::message(":ping_pong: Pong!"));
                 return;
-            };
-
-        commands.push_back(command);
+            }
+        );   
     }
 }

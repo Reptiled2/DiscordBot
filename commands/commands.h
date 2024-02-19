@@ -7,16 +7,8 @@
 #include <string>
 #include "dpp/dpp.h"
 
-template<typename T>
-struct Command {
-    std::string name;
-    std::string description;
-    bool NSFW;
 
-    std::function<void(dpp::cluster&, const dpp::slashcommand_t&)> execute;
-};
-
-extern std::vector<Command<int>> commands;
+extern std::vector<std::pair<dpp::slashcommand, std::function<void(dpp::cluster&, const dpp::slashcommand_t&)>>> commands;
 
 void setupCommands();
 

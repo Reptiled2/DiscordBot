@@ -9,15 +9,15 @@
 
 void handleCommands(dpp::cluster &bot, const dpp::slashcommand_t &event) {
 	for (auto i = commands.begin(); i != commands.end(); i++) {
-		if (i->name == event.command.get_command_name()) {
+		if (i->first.name == event.command.get_command_name()) {
 
-			if (i->NSFW && !event.command.channel.is_nsfw()) {
+			if (i->first.nsfw && !event.command.channel.is_nsfw()) {
 				event.reply(dpp::message("You can only use this command on NSFW channels!").set_flags(dpp::m_ephemeral));
 				return;
 			};
 
 
-			i->execute(bot, event);
+			i->second(bot, event);
 			return;
 		}
 	}
@@ -26,16 +26,9 @@ void handleCommands(dpp::cluster &bot, const dpp::slashcommand_t &event) {
 
 
 void registerCommands(dpp::cluster &bot) {
-	bot.global_bulk_command_delete_sync();
-
 	std::vector<dpp::slashcommand> commandList;
 	for (auto i = commands.begin(); i != commands.end(); i++) {
-		dpp::slashcommand command;
-		command.name = i->name;
-		command.description = i->description;
-		command.set_nsfw(i->NSFW);
-
-		commandList.push_back(command);
+		commandList.push_back(i->first);
 	};
 
 	bot.global_bulk_command_create_sync(commandList);
