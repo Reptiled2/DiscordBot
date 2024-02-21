@@ -8,6 +8,12 @@
 
 
 void handleCommands(dpp::cluster &bot, const dpp::slashcommand_t &event) {
+
+	if (event.command.get_issuing_user().is_bot()) {
+		event.cancel_event();
+		return;
+	};
+
 	for (auto i = commands.begin(); i != commands.end(); i++) {
 		if (i->first.name == event.command.get_command_name()) {
 
@@ -17,7 +23,12 @@ void handleCommands(dpp::cluster &bot, const dpp::slashcommand_t &event) {
 			};
 
 
-			i->second(bot, event);
+			if (i->second.ownerOnly && event.command.get_issuing_user().id != 486198835975028757) {
+				event.reply(dpp::message("You can't use this command!").set_flags(dpp::m_ephemeral));
+				return;
+			};
+
+			i->second.execute(bot, event);
 			return;
 		}
 	}

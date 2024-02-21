@@ -1,4 +1,5 @@
 #pragma once
+
 #ifndef COMMANDS_H
 #define COMMANDS_H
 
@@ -7,8 +8,13 @@
 #include <string>
 #include "dpp/dpp.h"
 
+struct commandData {
+    bool ownerOnly = false;
 
-extern std::vector<std::pair<dpp::slashcommand, std::function<void(dpp::cluster&, const dpp::slashcommand_t&)>>> commands;
+    std::function<void(dpp::cluster&, const dpp::slashcommand_t&)> execute;
+};
+
+extern std::vector<std::pair<dpp::slashcommand, commandData>> commands;
 
 void setupCommands();
 
