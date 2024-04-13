@@ -10,6 +10,7 @@
 
 struct commandData {
     bool ownerOnly = false;
+    std::vector<dpp::permissions> requiredPermissions;
 
     std::function<void(dpp::cluster&, const dpp::slashcommand_t&)> execute;
 };

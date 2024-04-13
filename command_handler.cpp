@@ -23,12 +23,26 @@ void handleCommands(dpp::cluster &bot, const dpp::slashcommand_t &event) {
 			};
 
 
-			if (i->second.ownerOnly && event.command.get_issuing_user().id != 486198835975028757) {
+			if (i->second.ownerOnly && event.command.usr.id != 486198835975028757) {
 				event.reply(dpp::message("You can't use this command!").set_flags(dpp::m_ephemeral));
 				return;
 			};
 
-			i->second.execute(bot, event);
+			for (dpp::permissions i : i->second.requiredPermissions) {
+				if (!(event.command.get_resolved_permission(event.command.usr.id).can(i))) {
+					event.reply(dpp::message("You don't have permission to do that!").set_flags(dpp::m_ephemeral));
+					return;
+				}
+			}
+
+			try {
+				i->second.execute(bot, event);
+			} catch (const dpp::exception& err) {
+				if (!event.is_cancelled()) {
+					event.cancel_event();
+				};
+
+			};
 			return;
 		}
 	}
