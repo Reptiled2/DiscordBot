@@ -15,15 +15,14 @@ void setupCommands() {
     // Ping
     {
         dpp::slashcommand command;
+        commandData data;
+
         command.name = "ping";
         command.description = "Returns client latency.";
-        command.set_nsfw(false);
 
-        commandData data;
         data.execute =
             [](dpp::cluster& bot, const dpp::slashcommand_t& event) {
                 event.reply(dpp::message(":ping_pong: Pong!"));
-                return;
             };
 
 
@@ -37,7 +36,6 @@ void setupCommands() {
 
         command.name = "status";
         command.description = "Changes bot status.";
-        command.set_nsfw(false);
 
         data.ownerOnly = true;
 
@@ -90,8 +88,7 @@ void setupCommands() {
 
         command.name = "purge";
         command.description = "Purges the channel.";
-        command.set_nsfw(false);
-        
+
         data.requiredPermissions.push_back(dpp::permissions::p_manage_messages);
 
 
@@ -117,26 +114,67 @@ void setupCommands() {
                     channelId = event.command.channel_id;
                 };
 
-                event.thinking(true);
-                dpp::message_map messages = bot.messages_get_sync(channelId, 0, event.command.message_id, 0, amount);
-
-                std::vector<dpp::snowflake> messagesVector;
-                for (const auto& message : messages) {
-                    if (message.second.sent + 1209600 < std::time(nullptr)) {
-                        break;
+                bot.messages_get(channelId, 0, event.command.message_id, 0, amount, [&bot, event, channelId](const dpp::confirmation_callback_t& callback) {
+                    if (callback.is_error()) {
+                        event.reply(dpp::message("An error ocurred while fetching messages!"));
+                        return;
                     };
 
-                    messagesVector.push_back(message.first);
+                    const dpp::message_map messages = std::get<dpp::message_map>(callback.value);
+
+                    std::vector<dpp::snowflake> messagesVector;
+                    for (const auto& message : messages) {
+                        if (message.second.sent + 1209600 < std::time(nullptr)) {
+                            break;
+                        };
+
+                        messagesVector.push_back(message.first);
+                    };
+
+                    if (messagesVector.size() == 0) {
+                        event.reply(dpp::message("Theres no message left to delete.").set_flags(dpp::m_ephemeral));
+                        return;
+                    };
+
+                    if (messagesVector.size() == 1) {
+                        bot.message_delete(messagesVector.at(0), channelId);
+                    } else {
+                        bot.message_delete_bulk(messagesVector, channelId);
+                    };
+                   
+                    event.reply(dpp::message("Successfully deleted " + std::to_string(messagesVector.size()) + " messages!"));
+                });
+        };
+
+        // Kick
+        {
+            dpp::slashcommand command;
+            commandData data;
+
+            command.name = "kick";
+            command.description = "Kick someone.";
+
+            data.requiredPermissions.push_back(dpp::permissions::p_kick_members);
+
+
+            // Option
+            {
+                command.add_option(
+                    dpp::command_option(dpp::command_option_type::co_user, "member", "Person you want to kick.", true)
+                );
+                command.add_option(
+                    dpp::command_option(dpp::command_option_type::co_string, "reason", "Reason for kick.", false)
+                );
+            };
+
+
+            data.execute =
+                [](dpp::cluster& bot, const dpp::slashcommand_t& event) {
+                    
                 };
 
-                if (messagesVector.size() == 0) {
-                    event.edit_original_response(dpp::message("Theres no message left to delete."));
-                    return;
-                };
 
-                bot.message_delete_bulk_sync(messagesVector, channelId);
-
-                event.edit_original_response(dpp::message("Successfully deleted " + std::to_string(messagesVector.size()) + " messages!"));
+            commands.emplace_back(command, data);
         };
 
 

@@ -38,10 +38,11 @@ void handleCommands(dpp::cluster &bot, const dpp::slashcommand_t &event) {
 			try {
 				i->second.execute(bot, event);
 			} catch (const dpp::exception& err) {
-				if (!event.is_cancelled()) {
-					event.cancel_event();
+				if (err.code() == dpp::err_permissions) {
+					event.reply(dpp::message("Bot doesn't have required permissions to do that! Please fix it.").set_flags(dpp::m_ephemeral));
 				};
 
+				throw err;
 			};
 			return;
 		}
