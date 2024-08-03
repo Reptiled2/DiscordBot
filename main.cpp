@@ -7,7 +7,7 @@
 #include "command_handler.h"
 
 
-const static std::string BOT_TOKEN = "MTA1MDQyMjM4OTA0NzA0MjA5MA.G-c88_.XaYbAdeFzlGPQDlsO-orr2eCBAG7MMVqovRkik";
+const static std::string BOT_TOKEN = "";
 
 
 int main() {
